@@ -3,22 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Guru | ONMAI Admin</title>
+    <title>Bank Soal / Ujian | ONMAI Admin</title>
     
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,300,700" rel="stylesheet">
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { brand: '#ffc800', dark: '#1f2937', darker: '#111827' },
-                    fontFamily: { heading: ['Montserrat', 'sans-serif'], body: ['Roboto Slab', 'serif'] }
-                }
-            }
-        }
-    </script>
 </head>
 <body class="bg-gray-100 font-body text-gray-800 flex h-screen overflow-hidden relative">
 
@@ -39,7 +30,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('guru.index') }}" class="flex items-center gap-3 px-6 py-3 bg-gray-800 border-r-4 border-brand text-white transition">
+                    <a href="{{ route('guru.index') }}" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-brand transition">
                         <i class="fas fa-user-tie w-5 text-center"></i> Data Guru
                     </a>
                 </li>
@@ -49,7 +40,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.ujian.index') }}" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-brand transition">
+                    <a href="{{ route('admin.ujian.index') }}" class="flex items-center gap-3 px-6 py-3 bg-gray-800 border-r-4 border-brand text-white transition">
                         <i class="fas fa-file-alt w-5 text-center"></i> Bank Soal
                     </a>
                 </li>
@@ -71,7 +62,7 @@
             <button id="sidebar-toggle" class="md:hidden text-gray-600 text-2xl focus:outline-none hover:text-brand transition">
                 <i class="fas fa-bars"></i>
             </button>
-            <h2 class="text-xl font-bold font-heading text-gray-800">Manajemen Guru</h2>
+            <h2 class="text-xl font-bold font-heading text-gray-800">Bank Soal & Ujian</h2>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
                     <span class="block text-sm font-bold text-gray-800">{{ Auth::user()->name }}</span>
@@ -95,16 +86,16 @@
 
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 animate-[fadeIn_0.5s_ease-out]">
                 
-                <form action="{{ route('guru.index') }}" method="GET" class="relative w-full md:w-72">
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama atau email..." 
+                <form action="{{ route('admin.ujian.index') }}" method="GET" class="relative w-full md:w-96">
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama ujian atau mapel..." 
                            class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none transition shadow-sm">
                     <button type="submit" class="absolute left-3 top-3.5 text-gray-400 hover:text-brand transition">
                         <i class="fas fa-search"></i>
                     </button>
                 </form>
-
-                <a href="{{ route('guru.create') }}" class="w-full md:w-auto px-6 py-2.5 bg-brand text-white rounded-xl font-bold shadow-md hover:bg-yellow-500 transition flex items-center justify-center gap-2">
-                    <i class="fas fa-plus"></i> Tambah Guru Baru
+                
+                <a href="{{ route('admin.ujian.create') }}" class="w-full md:w-auto px-6 py-2.5 bg-brand text-white rounded-xl font-bold shadow-md hover:bg-yellow-500 transition flex items-center justify-center gap-2 group">
+                    <i class="fas fa-plus group-hover:rotate-90 transition-transform duration-300"></i> Buat Ujian Baru
                 </a>
             </div>
 
@@ -114,40 +105,55 @@
                         <thead>
                             <tr class="bg-gray-800 text-white text-xs uppercase tracking-wider">
                                 <th class="p-4 font-bold border-b border-gray-700">No</th>
-                                <th class="p-4 font-bold border-b border-gray-700">Nama Lengkap</th>
-                                <th class="p-4 font-bold border-b border-gray-700">Email</th>
-                                <th class="p-4 font-bold border-b border-gray-700">Tanggal Bergabung</th>
+                                <th class="p-4 font-bold border-b border-gray-700">Nama Ujian</th>
+                                <th class="p-4 font-bold border-b border-gray-700">Mapel & Kelas</th>
+                                <th class="p-4 font-bold border-b border-gray-700">Waktu</th>
                                 <th class="p-4 font-bold border-b border-gray-700 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
-                            @forelse($gurus as $index => $guru)
-                            <tr class="hover:bg-yellow-50 transition duration-150">
+                            @forelse($ujians as $index => $ujian)
+                            <tr class="hover:bg-yellow-50 transition duration-150 group">
                                 <td class="p-4 text-sm text-gray-500 font-bold">
-                                    {{ $gurus->firstItem() + $index }}
+                                    {{ $ujians->firstItem() + $index }}
                                 </td>
                                 <td class="p-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-xs uppercase">
-                                            {{ substr($guru->name, 0, 1) }}
-                                        </div>
-                                        <span class="font-bold text-gray-800">{{ $guru->name }}</span>
-                                    </div>
+                                    <span class="font-bold text-gray-800 block text-base group-hover:text-brand transition">{{ $ujian->nama_ujian }}</span>
+                                    <span class="text-xs text-gray-400 mt-1 block">
+                                        Status: {{ $ujian->tampilkan_hasil ? 'Hasil Tampil' : 'Hasil Sembunyi' }}
+                                    </span>
                                 </td>
-                                <td class="p-4 text-sm text-gray-600">{{ $guru->email }}</td>
-                                <td class="p-4 text-sm text-gray-500">
-                                    <i class="far fa-calendar-alt mr-1"></i> {{ $guru->created_at->format('d M Y') }}
+                                <td class="p-4">
+                                    <span class="block text-sm text-gray-700 font-bold">{{ $ujian->mapel }}</span>
+                                    <span class="inline-block px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-xs font-bold mt-1 border border-gray-200">
+                                        Kelas {{ $ujian->kelas }}
+                                    </span>
+                                </td>
+                                <td class="p-4 text-sm text-gray-600">
+                                    <div class="flex flex-col text-xs space-y-1">
+                                        <span class="flex items-center gap-1 font-bold text-gray-700">
+                                            <i class="fas fa-stopwatch text-brand"></i> 
+                                            {{ \Carbon\Carbon::parse($ujian->waktu_mulai)->diffInMinutes(\Carbon\Carbon::parse($ujian->waktu_selesai)) }} Menit
+                                        </span>
+                                        <span class="text-gray-400">
+                                            {{ \Carbon\Carbon::parse($ujian->waktu_mulai)->format('d M H:i') }}
+                                        </span>
+                                    </div>
                                 </td>
                                 <td class="p-4 text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        <a href="{{ route('guru.edit', $guru->id) }}" class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-sm" title="Edit Data">
+                                        <a href="{{ route('admin.ujian.show', $ujian->id) }}" class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-600 hover:text-white transition shadow-sm" title="Lihat Detail & Soal">
+                                            <i class="fas fa-eye text-xs"></i>
+                                        </a>
+                                        
+                                        <a href="{{ route('admin.ujian.edit', $ujian->id) }}" class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-sm" title="Edit Data Ujian">
                                             <i class="fas fa-edit text-xs"></i>
                                         </a>
 
-                                        <form action="{{ route('guru.destroy', $guru->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data guru {{ $guru->name }}? Tindakan ini tidak dapat dibatalkan.')">
+                                        <form action="{{ route('admin.ujian.destroy', $ujian->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus ujian ini? Data soal dan nilai siswa terkait akan ikut terhapus secara permanen.')">
                                             @csrf 
                                             @method('DELETE')
-                                            <button type="submit" class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition shadow-sm" title="Hapus Data">
+                                            <button type="submit" class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition shadow-sm" title="Hapus Ujian">
                                                 <i class="fas fa-trash text-xs"></i>
                                             </button>
                                         </form>
@@ -156,12 +162,15 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="p-8 text-center text-gray-400">
-                                    <div class="flex flex-col items-center">
-                                        <i class="fas fa-user-slash text-4xl mb-3"></i>
-                                        <p>Belum ada data guru ditemukan.</p>
+                                <td colspan="5" class="p-12 text-center">
+                                    <div class="flex flex-col items-center justify-center text-gray-300">
+                                        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-3">
+                                            <i class="fas fa-folder-open text-2xl"></i>
+                                        </div>
+                                        <h4 class="text-gray-500 font-bold text-lg">Belum Ada Data Ujian</h4>
+                                        <p class="text-gray-400 text-sm mt-1">Silakan tambahkan ujian baru untuk memulai.</p>
                                         @if(request('q'))
-                                            <a href="{{ route('guru.index') }}" class="mt-2 text-brand font-bold text-sm hover:underline">Reset Pencarian</a>
+                                            <a href="{{ route('admin.ujian.index') }}" class="mt-4 text-brand font-bold text-sm hover:underline">Reset Pencarian</a>
                                         @endif
                                     </div>
                                 </td>
@@ -172,13 +181,13 @@
                 </div>
                 
                 <div class="p-4 border-t border-gray-100 bg-gray-50">
-                    {{ $gurus->links() }} 
+                    {{ $ujians->links() }} 
                 </div>
             </div>
 
         </main>
     </div>
-
+    
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const sidebar = document.getElementById('sidebar');
@@ -199,7 +208,6 @@
                     setTimeout(() => { overlay.classList.add('hidden'); }, 300);
                 }
             }
-
             if (toggleBtn) toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleSidebar(); });
             if (overlay) overlay.addEventListener('click', toggleSidebar);
         });

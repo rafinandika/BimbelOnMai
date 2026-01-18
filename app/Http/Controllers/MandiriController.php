@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class MandiriController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar mata pelajaran (Menu Utama)
      */
     public function index()
     {
@@ -18,7 +18,10 @@ class MandiriController extends Controller
         return view('mandiri.materi', compact('mandiris'));
     }
 
-    public function import(Request $request)
+    /**
+     * Import Soal dari Excel (FIX GAMBAR HILANG)
+     */
+    public function import(Request $request, $id)
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv|max:2048',
@@ -28,30 +31,41 @@ class MandiriController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         $rows = $sheet->toArray();
 
+        // Ambil header baris pertama, bersihkan spasi, dan jadikan huruf kecil
+        // Contoh header Excel: "Soal", "A", "B", "C", "D", "Kunci"
         $header = array_map(fn($h) => strtolower(trim($h)), $rows[0]);
-        unset($rows[0]);
+        unset($rows[0]); // Hapus baris header dari data
 
-        $soals = [];
+        // DAFTAR TAG YANG DIIZINKAN (Agar gambar <img> tidak terhapus)
+        $allowed_tags = '<img><p><br><b><i><u><strong><em><span><div><ul><ol><li><table><tr><td><th><tbody><thead>'; 
 
         foreach ($rows as $row) {
-            if (count($row) !== count($header)) continue;
+            // Skip baris kosong atau tidak lengkap
+            if (count($row) < count($header)) continue;
 
-            $data = array_combine($header, $row);
+            // Gabungkan header dengan data baris ini
+            // Gunakan array_slice untuk menghindari error jika jumlah kolom data > header
+            $data = array_combine($header, array_slice($row, 0, count($header)));
 
-            $soals[] = [
-                'pertanyaan' => strip_tags($data['soal'] ?? ''),
-                'a' => strip_tags($data['a'] ?? ''),
-                'b' => strip_tags($data['b'] ?? ''),
-                'c' => strip_tags($data['c'] ?? ''),
-                'd' => strip_tags($data['d'] ?? ''),
-            ];
+            // Simpan ke database (Relasi ke tabel Mapel/Soal)
+            // Pastikan Anda memiliki Model 'Mapel' yang terhubung ke tabel soal
+            Mapel::create([
+                'mandiri_id' => $id, // ID Mapel Induk
+                'pertanyaan' => strip_tags($data['soal'] ?? '', $allowed_tags),
+                'a'          => strip_tags($data['a'] ?? '', $allowed_tags),
+                'b'          => strip_tags($data['b'] ?? '', $allowed_tags),
+                'c'          => strip_tags($data['c'] ?? '', $allowed_tags),
+                'd'          => strip_tags($data['d'] ?? '', $allowed_tags),
+                'kunci_jawaban' => strtoupper($data['kunci'] ?? $data['jawaban'] ?? $data['key'] ?? null),
+            ]);
         }
 
-        // LANGSUNG kirim ke view (tidak session, tidak DB)
-        return view('mandiri.latihan', compact('soals'));
+        return redirect()->route('mandiri.show', $id)
+            ->with('success', 'Soal berhasil diimport!');
     }
+
     /**
-     * Show the form for creating a new resource.
+     * Form Tambah Mapel
      */
     public function create()
     {
@@ -59,7 +73,7 @@ class MandiriController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Simpan Mapel Baru
      */
     public function store(Request $request)
     {
@@ -72,19 +86,22 @@ class MandiriController extends Controller
         ]);
 
         return redirect()->back()
-            ->with('success', 'Data berhasil ditambahkan');
+            ->with('success', 'Mata Pelajaran berhasil ditambahkan');
     }
 
     /**
-     * Display the specified resource.
+     * Menampilkan Detail Mapel & Daftar Soal (FIX ARGUMENT ERROR)
      */
-    public function show(Mandiri $mandiri)
+    public function show($id)
     {
-          return view('mandiri.show', compact('mandiri'));
+        // Menggunakan $id (bukan Model Binding) agar lebih fleksibel & aman
+        $mandiri = Mandiri::with('mapels')->findOrFail($id);
+        
+        return view('mandiri.show', compact('mandiri'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Form Edit (Kosongkan jika tidak dipakai)
      */
     public function edit(Mandiri $mandiri)
     {
@@ -92,7 +109,7 @@ class MandiriController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Data
      */
     public function update(Request $request, Mandiri $mandiri)
     {
@@ -100,12 +117,14 @@ class MandiriController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Hapus Mapel beserta Soalnya
      */
-    public function destroy(Mandiri $mandiri)
+    public function destroy($id)
     {
+        $mandiri = Mandiri::findOrFail($id);
         $mandiri->delete();
-         return redirect()->route('mandiri.materi')
-            ->with('success', 'Mapel dan semua soal berhasil dihapus');
+        
+        return redirect()->route('mandiri.materi')
+            ->with('success', 'Mata Pelajaran dan semua soalnya berhasil dihapus');
     }
 }

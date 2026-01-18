@@ -16,6 +16,7 @@ use App\Http\Controllers\HasilController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\GuruController;
 use App\Http\Controllers\Admin\SiswaController;
+use App\Http\Controllers\Admin\UjianController as AdminUjianController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,7 +68,7 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 
     // 1. MANAJEMEN MANDIRI (BANK SOAL / LATIHAN)
     Route::get('/mandiri', [MandiriController::class, 'index'])->name('mandiri.materi'); 
-    Route::resource('mandiri', MandiriController::class)->except(['index']); // Index sudah dihandle diatas
+    Route::resource('mandiri', MandiriController::class)->except(['index']);
     
     // Import Soal Latihan
     Route::post('/mandiri/latihan/import', [MandiriController::class, 'import']);
@@ -147,4 +148,5 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::resource('admin/guru', GuruController::class)->names('guru');
     Route::resource('admin/siswa', SiswaController::class)->names('siswa');
+    Route::resource('admin/ujian', AdminUjianController::class)->names('admin.ujian');
 });

@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,300,700" rel="stylesheet">
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
         tailwind.config = { theme: { extend: { colors: { brand: '#ffc800', dark: '#1f2937', darker: '#111827' }, fontFamily: { heading: ['Montserrat', 'sans-serif'], body: ['Roboto Slab', 'serif'] } } } }
     </script>
@@ -25,7 +25,7 @@
                 <li><a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-brand"><i class="fas fa-tachometer-alt w-5 text-center"></i> Dashboard</a></li>
                 <li><a href="{{ route('guru.index') }}" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-brand"><i class="fas fa-user-tie w-5 text-center"></i> Data Guru</a></li>
                 <li><a href="{{ route('siswa.index') }}" class="flex items-center gap-3 px-6 py-3 bg-gray-800 border-r-4 border-brand text-white"><i class="fas fa-user-graduate w-5 text-center"></i> Data Siswa</a></li>
-                <li><a href="#" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-brand"><i class="fas fa-file-alt w-5 text-center"></i> Bank Soal</a></li>
+                <li><a href="{{ route('admin.ujian.index') }}" class="flex items-center gap-3 px-6 py-3 text-gray-400 hover:text-brand"><i class="fas fa-file-alt w-5 text-center"></i> Bank Soal</a></li>
             </ul>
         </nav>
         <div class="p-4 border-t border-gray-800 shrink-0">
