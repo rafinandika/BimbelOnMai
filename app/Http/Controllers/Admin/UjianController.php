@@ -13,7 +13,6 @@ class UjianController extends Controller
     {
         $search = $request->query('q');
         
-        // HAPUS with('user') karena relasi sudah tidak ada
         $query = Ujian::latest();
 
         if ($search) {

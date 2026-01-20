@@ -23,6 +23,7 @@
         /* Utilitas Warna Brand */
         .bg-brand { background-color: #ffc800; }
         .text-brand { color: #ffc800; }
+        .text-brands { color: white; }
         .border-brand { border-color: #ffc800; }
         .hover-bg-brand:hover { background-color: #d9aa00; }
         
@@ -75,7 +76,7 @@
             <div class="flex justify-between items-center h-20">
                 <a class="flex items-center gap-3 text-xl font-bold font-heading tracking-wider text-white group" href="#page-top">
                     <img src="{{ asset('landing-page/assets/img/img1.png') }}" class="h-10 w-auto transition-transform duration-300 group-hover:scale-110" alt="Logo" />
-                    <span class="text-brand">ONMAI</span>
+                    <span class="text-brands">ONMAI</span>
                 </a>
     
                 <div class="hidden lg:flex items-center space-x-8 uppercase text-[0.85rem] font-bold tracking-wide text-gray-300 font-heading">
@@ -184,7 +185,7 @@
                 <span class="text-brand font-bold uppercase text-xs sm:text-sm tracking-widest">Pusat Bimbingan Belajar Terbaik</span>
             </div>
             <h1 class="text-5xl md:text-7xl lg:text-8xl font-extrabold uppercase tracking-tight mb-6 font-heading text-white drop-shadow-2xl">
-                ON<span class="text-brand">MAI</span>
+                ON<span class="text-brands">MAI</span>
             </h1>
             <p class="text-xl md:text-2xl font-light tracking-widest mb-10 text-gray-300">SARAN UNTUK BERPRESTASI</p>
             

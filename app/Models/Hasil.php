@@ -8,7 +8,7 @@ class Hasil extends Model
 {
     protected $table = 'hasils';
 
-    protected $fillable = ['user_id', 'ujian_id', 'skor','selesai'];
+    protected $fillable = ['user_id', 'ujian_id', 'skor','selesai', 'peringatan'];
 
     public function user()
     {

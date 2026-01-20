@@ -108,22 +108,11 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:siswa'])->group(function () {
-
-    // Dashboard Siswa (Daftar Tryout)
     Route::get('/tryout', [TryoutController::class, 'index'])->name('tryout.index');
-
-    // Halaman Persiapan / Konfirmasi Ujian
     Route::get('/tryout/{ujian}', [TryoutController::class, 'show'])->name('tryout.show');
-
-    // Proses Pengerjaan Ujian (Wajib cek apakah sudah selesai)
     Route::middleware(['nocache', 'cek.ujian.selesai'])->group(function () {
-        // Halaman Pengerjaan Soal
         Route::get('/tryout/{ujian}/kerjakan/{index?}', [TryoutController::class, 'kerjakan'])->name('tryout.kerjakan');
-        
-        // Simpan Jawaban
         Route::post('/tryout/jawab', [JawabanController::class, 'jawab'])->name('tryout.jawab');
-        
-        // Anti Curang
         Route::post('/ujian/pelanggaran', [TryoutController::class, 'pelanggaran'])->name('ujian.pelanggaran');
         Route::post('/ujian/keluar', [TryoutController::class, 'keluar'])->name('ujian.keluar');
     });

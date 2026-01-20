@@ -3,24 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Ujian;
-use Carbon\Carbon;
 use App\Models\Hasil;
-use App\Models\Soal;
 use App\Models\Jawaban;
 
-
-
-class tryoutController extends Controller
+class TryoutController extends Controller
 {
-     public function index() 
+    public function index()
     {
         $ujian = Ujian::all();
-
-        
-       $now = now();
+        $now = now();
 
         foreach ($ujian as $item) {
             $item->bisa_dikerjakan =
@@ -32,94 +25,153 @@ class tryoutController extends Controller
         return view('tryout.tryout', compact('ujian'));
     }
 
-    public function show()
+    public function show(Ujian $ujian)
     {
-        return view('tryout.show');
-    }
-        
-
- public function kerjakan(Ujian $ujian, $index)
-{
-    $hasil = Hasil::where('user_id', Auth::id())
-        ->where('ujian_id', $ujian->id)
-        ->first();
-
-    if ($hasil && $hasil->selesai) {
-        return redirect()->route('tryout.hasil', $ujian->id)
-            ->with('warning', 'Anda sudah menyelesaikan ujian ini.');
+        return view('tryout.show', compact('ujian'));
     }
 
-    $soal_list = $ujian->soals()->get();
-    $soal = $soal_list[$index];
+    public function kerjakan(Ujian $ujian, $index = 0)
+    {
+        // Cek hasil menggunakan kolom 'selesai' (tinyint)
+        $hasil = Hasil::where('user_id', Auth::id())
+            ->where('ujian_id', $ujian->id)
+            ->first();
 
-    $jawaban_user = Jawaban::where('user_id', Auth::id())
-        ->where('ujian_id', $ujian->id)
-        ->where('soal_id', $soal->id) // 🔥 INI KUNCINYA
-        ->first();
-    $jawaban_all = Jawaban::where('user_id', Auth::id())
-    ->where('ujian_id', $ujian->id)
-    ->pluck('jawaban', 'soal_id'); // soal_id => jawaban
+        // Jika selesai == 1, maka redirect
+        if ($hasil && $hasil->selesai == 1) {
+            return redirect()->route('tryout.hasil', $ujian->id)
+                ->with('warning', 'Anda sudah menyelesaikan ujian ini.');
+        }
 
+        $soal_list = $ujian->soals()->get();
 
-    return view('tryout.kerjakan', compact(
-        'ujian',
-        'soal_list',
-        'soal',
-        'index',
-        'jawaban_user',
-        'jawaban_all'
-    ));
-}
+        if ($soal_list->isEmpty()) {
+            return redirect()->route('tryout.tryout')
+                ->with('error', 'Soal untuk ujian ini belum tersedia.');
+        }
 
-public function akhiri(Ujian $ujian)
-{
-    $nilai = 0; // hitung nilai di sini
+        if (!isset($soal_list[$index])) {
+            return redirect()->route('tryout.kerjakan', ['ujian' => $ujian->id, 'index' => 0]);
+        }
 
-    $hasil = Hasil::updateOrCreate(
-        [
-            'user_id' => Auth::id(),
-            'ujian_id' => $ujian->id,
-        ],
-        [
-            'nilai' => $nilai,
-            'selesai' => true
-        ]
-    );
+        $soal = $soal_list[$index];
 
-    return redirect()->route('tryout.hasil', $ujian->id);
-}
+        $jawaban_user = Jawaban::where('user_id', Auth::id())
+            ->where('ujian_id', $ujian->id)
+            ->where('soal_id', $soal->id)
+            ->first();
 
+        $jawaban_all = Jawaban::where('user_id', Auth::id())
+            ->where('ujian_id', $ujian->id)
+            ->pluck('jawaban', 'soal_id');
 
-
-public function pelanggaran(Request $request)
-{
-    $hasil = Hasil::where('user_id', Auth::id())
-        ->where('ujian_id', $request->ujian_id)
-        ->first();
-
-    if (!$hasil || $hasil->status === 'selesai') {
-        return response()->json(['status' => 'selesai']);
+        return view('tryout.kerjakan', compact(
+            'ujian',
+            'soal_list',
+            'soal',
+            'index',
+            'jawaban_user',
+            'jawaban_all'
+        ));
     }
 
-    $hasil->peringatan += 1;
+    public function akhiri(Ujian $ujian)
+    {
+        $total_soal = $ujian->soals()->count();
+        $jawaban_benar = 0;
 
-    // RESET JAWABAN
-    Jawaban::where('hasil_id', $hasil->id)->delete();
+        $jawabans = Jawaban::where('user_id', Auth::id())
+            ->where('ujian_id', $ujian->id)
+            ->get();
 
-    if ($hasil->peringatan >= 3) {
-        $hasil->status = 'selesai';
+        foreach ($jawabans as $jawab) {
+            if ($jawab->soal && $jawab->jawaban == $jawab->soal->kunci_jawaban) {
+                $jawaban_benar++;
+            }
+        }
+
+        $skor = ($total_soal > 0) ? ($jawaban_benar / $total_soal) * 100 : 0;
+
+        // Gunakan updateOrCreate agar aman
+        Hasil::updateOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'ujian_id' => $ujian->id,
+            ],
+            [
+                'skor' => $skor,       // SESUAI DB: 'skor'
+                'selesai' => 1,        // SESUAI DB: 1 (Tinyint True)
+                // peringatan tidak diupdate disini agar history pelanggaran tidak hilang
+            ]
+        );
+
+        return redirect()->route('tryout.hasil', $ujian->id);
+    }
+
+    public function pelanggaran(Request $request)
+    {
+        $ujian_id = $request->input('ujian_id');
+        $user_id = Auth::id();
+
+        // 1. Cari Data Hasil secara Manual
+        $hasil = Hasil::where('user_id', $user_id)
+                      ->where('ujian_id', $ujian_id)
+                      ->first();
+
+        // 2. Jika Belum Ada, Buat Baru
+        if (!$hasil) {
+            $hasil = new Hasil();
+            $hasil->user_id = $user_id;
+            $hasil->ujian_id = $ujian_id;
+            $hasil->skor = 0;          // SESUAI DB
+            $hasil->peringatan = 0;    // KOLOM BARU
+            $hasil->selesai = 0;       // FALSE
+            $hasil->save();
+        }
+
+        // 3. Jika Sudah Selesai, Return selesai
+        if ($hasil->selesai == 1) {
+            return response()->json(['status' => 'selesai']);
+        }
+
+        // 4. Tambah Peringatan
+        $hasil->peringatan += 1;
+
+        // 5. Cek Batas Pelanggaran (>= 3)
+        if ($hasil->peringatan >= 3) {
+            
+            // Hitung Skor Akhir
+            $ujian = Ujian::find($ujian_id);
+            if ($ujian) {
+                $total_soal = $ujian->soals()->count();
+                $jawaban_benar = 0;
+                
+                $jawabans = Jawaban::where('user_id', $user_id)
+                    ->where('ujian_id', $ujian_id)
+                    ->get();
+
+                foreach ($jawabans as $jawab) {
+                    if ($jawab->soal && $jawab->jawaban == $jawab->soal->kunci_jawaban) {
+                        $jawaban_benar++;
+                    }
+                }
+                
+                $skor = ($total_soal > 0) ? ($jawaban_benar / $total_soal) * 100 : 0;
+                $hasil->skor = $skor; // Simpan ke kolom 'skor'
+            }
+
+            $hasil->selesai = 1; // Set Selesai = True
+            $hasil->save();
+
+            return response()->json(['status' => 'selesai']);
+        }
+
+        // Simpan Peringatan
         $hasil->save();
 
-        return response()->json(['status' => 'selesai']);
+        return response()->json([
+            'status' => 'peringatan',
+            'peringatan' => $hasil->peringatan
+        ]);
     }
-
-    $hasil->save();
-
-    return response()->json([
-        'status' => 'peringatan',
-        'peringatan' => $hasil->peringatan
-    ]);
-}
-
-
 }

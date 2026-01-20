@@ -6,6 +6,56 @@
 
 <div class="container mx-auto max-w-7xl pb-12">
     
+    {{-- === BAGIAN NOTIFIKASI TAMBAHAN === --}}
+    
+    {{-- 1. Notifikasi Error (Merah) - Muncul jika soal kosong/tidak ada --}}
+    @if(session('error'))
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r shadow-sm mb-6 animate-[fadeIn_0.5s_ease-out] flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-red-200 rounded-full p-2">
+                    <i class="fas fa-exclamation-triangle text-red-600"></i>
+                </div>
+                <div>
+                    <p class="font-bold text-sm">Mohon Maaf</p>
+                    <p class="text-sm">{{ session('error') }}</p>
+                </div>
+            </div>
+            {{-- Tombol Close --}}
+            <button onclick="this.parentElement.style.display='none'" class="text-red-400 hover:text-red-700 transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    @endif
+
+    {{-- 2. Notifikasi Warning (Kuning) - Muncul jika sudah pernah mengerjakan --}}
+    @if(session('warning'))
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-r shadow-sm mb-6 animate-[fadeIn_0.5s_ease-out] flex items-center gap-3">
+            <div class="bg-yellow-200 rounded-full p-2">
+                <i class="fas fa-info-circle text-yellow-600"></i>
+            </div>
+            <div>
+                <p class="font-bold text-sm">Informasi</p>
+                <p class="text-sm">{{ session('warning') }}</p>
+            </div>
+        </div>
+    @endif
+
+    {{-- 3. Notifikasi Sukses (Hijau) --}}
+    @if(session('success'))
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-r shadow-sm mb-6 animate-[fadeIn_0.5s_ease-out] flex items-center gap-3">
+            <div class="bg-green-200 rounded-full p-2">
+                <i class="fas fa-check text-green-600"></i>
+            </div>
+            <div>
+                <p class="font-bold text-sm">Berhasil</p>
+                <p class="text-sm">{{ session('success') }}</p>
+            </div>
+        </div>
+    @endif
+
+    {{-- === AKHIR BAGIAN NOTIFIKASI === --}}
+
+
     <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 border-l-4 border-[#ffc800] flex flex-col md:flex-row items-center justify-between gap-4 animate-[fadeIn_0.5s_ease-out]">
         <div>
             <h2 class="text-2xl font-bold text-gray-800 font-heading">

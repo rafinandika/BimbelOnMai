@@ -69,6 +69,29 @@
     </nav>
 
     <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-[fadeIn_0.5s_ease-out]">
+        
+        @if(session('error'))
+            <div class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-sm flex items-center justify-between animate-pulse">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-exclamation-triangle text-xl"></i>
+                    <div>
+                        <p class="font-bold">Mohon Maaf</p>
+                        <p class="text-sm">{{ session('error') }}</p>
+                    </div>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-red-700 hover:text-red-900 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        @endif
+
+        @if(session('warning'))
+            <div class="mb-6 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow-sm flex items-center gap-3">
+                <i class="fas fa-info-circle text-xl"></i>
+                <p class="font-bold text-sm">{{ session('warning') }}</p>
+            </div>
+        @endif
+
         <div class="mb-6">
             @yield('header')
         </div>
