@@ -181,6 +181,9 @@
         </div>
 
         <div class="relative container mx-auto px-4 text-center text-white z-10 pt-16">
+        <div class="inline-block px-4 py-1 mb-6 border border-brand/50 rounded-full bg-brand/10 backdrop-blur-sm">
+                <span class="text-brand font-bold uppercase text-xs sm:text-sm tracking-widest">Pusat Bimbingan Belajar</span>
+            </div>
             <h1 class="text-5xl md:text-7xl lg:text-8xl font-extrabold uppercase tracking-tight mb-6 font-heading text-white drop-shadow-2xl">
                 ON<span class="text-brands">MAI</span>
             </h1>
@@ -211,7 +214,7 @@
                     <div class="absolute top-0 right-0 w-24 h-24 bg-brand/10 rounded-bl-full rounded-tr-2xl transition-all duration-300 group-hover:bg-brand/20"></div>
                     
                     <div class="relative z-10 flex justify-center mb-6">
-                        <div class="w-28 h-28 rounded-xl bg-gray-50 flex items-center justify-center border-4 border-white shadow-md group-hover:scale-105 transition duration-300 overflow-hidden">
+                        <div class="w-50 h-50 rounded-xl bg-gray-50 flex items-center justify-center border-4 border-white shadow-md group-hover:scale-105 transition duration-300 overflow-hidden">
                              <img src="{{ asset('landing-page/assets/img/img3.png') }}" class="w-full h-full object-cover" alt="Ruang Belajar">
                         </div>
                     </div>
@@ -225,7 +228,7 @@
                     <div class="absolute top-0 right-0 w-24 h-24 bg-brand/10 rounded-bl-full rounded-tr-2xl transition-all duration-300 group-hover:bg-brand/20"></div>
                     
                     <div class="relative z-10 flex justify-center mb-6">
-                        <div class="w-28 h-28 rounded-xl bg-gray-50 flex items-center justify-center border-4 border-white shadow-md group-hover:scale-105 transition duration-300 overflow-hidden">
+                        <div class="w-50 h-50 rounded-xl bg-gray-50 flex items-center justify-center border-4 border-white shadow-md group-hover:scale-105 transition duration-300 overflow-hidden">
                              <img src="{{ asset('landing-page/assets/img/img4.png') }}" class="w-full h-full object-cover" alt="Persiapan Ujian">
                         </div>
                     </div>
@@ -239,7 +242,7 @@
                     <div class="absolute top-0 right-0 w-24 h-24 bg-brand/10 rounded-bl-full rounded-tr-2xl transition-all duration-300 group-hover:bg-brand/20"></div>
                     
                     <div class="relative z-10 flex justify-center mb-6">
-                        <div class="w-28 h-28 rounded-xl bg-gray-50 flex items-center justify-center border-4 border-white shadow-md group-hover:scale-105 transition duration-300 overflow-hidden">
+                        <div class="w-50 h-50 rounded-xl bg-gray-50 flex items-center justify-center border-4 border-white shadow-md group-hover:scale-105 transition duration-300 overflow-hidden">
                              <img src="{{ asset('landing-page/assets/img/img5.png') }}" class="w-full h-full object-cover" alt="Ruang Depan">
                         </div>
                     </div>
@@ -529,9 +532,10 @@
             </div>
             
             <div class="flex flex-col md:flex-row justify-center gap-6 mb-12">
-                <a href="https://wa.me/6285273168989" target="_blank" class="group flex items-center justify-center gap-3 px-6 py-3 bg-white/10 rounded-full hover:bg-green-600 hover:text-white transition duration-300 backdrop-blur-sm border border-white/10 ">
+                
+                <a href="https://wa.me/6282282377168" target="_blank" class="group flex items-center justify-center gap-3 px-6 py-3 bg-white/10 rounded-full hover:bg-green-600 hover:text-white transition duration-300 backdrop-blur-sm border border-white/10 ">
                     <i class="fab fa-whatsapp text-2xl text-green-400 group-hover:text-white transition-colors duration-300"></i>
-                    <span class="font-bold text-lg">+62 852 7326 8989 (Ibu Derma)</span>
+                    <span class="font-bold text-lg">Whatsapp ONMAI</span>
                 </a>
                 <a href="https://instagram.com/bimbel_onmai" target="_blank" class="flex items-center justify-center gap-3 px-6 py-3 bg-white/10 rounded-full hover:bg-pink-600 hover:text-white transition duration-300 backdrop-blur-sm border border-white/10">
                     <i class="fab fa-instagram text-2xl text-pink-400"></i>
